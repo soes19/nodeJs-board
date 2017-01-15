@@ -1,40 +1,51 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('mongoose');
 var config = require('../myModules/config');
-var readData = require('../myModules/readData');
-var writeData = require('../myModules/writeData');
 
-var MongoClient = require('mongodb').MongoClient
-     , assert = require('assert');
-// Connection URL
-var url = 'mongodb://localhost:27017/project_todo';
-// Use connect method to connect to the server
+var todoSchema = mongoose.Schema({
+  title:String,
+  date:Date,
+  writer:String,
+  task:String,
+});
+var todo = mongoose.model("todo", todoSchema, 'test');
 
-var dbUrl = config.dbUrl();
-router.get('/', function(req, res, next) {
- MongoClient.connect(dbUrl, function(err,db){
-    readData(db, function(err, data){
-      assert.equal(err, null);
-      db.close();
-      res.render('index', {todo:data});
-    });
+mongoose.connect(config.dbUrl());
+router.get('/list', function(req, res, next) {
+  todo.find({},function(err, docs){
+    console.log(docs);
+    res.render('index', {todo:docs});
   });
 });
 
+router.get('/', function(req, res, next) {
+  res.redirect('/list');
+});
+
+router.get('/write', function(req, res, next) {
+  res.render('write');
+});
+
+router.get('/detail', function(req, res, next) {
+	 var contentId = req.param('id');
+    todo.findOne({_id:contentId}, function(err, rawContent){
+        if(err) throw err;
+         
+		res.render('detail',{todo:rawContent}); // db에서 가져온 내용을 뷰로 렌더링
+    })
+});
+
 router.post('/task-register', function(req, res) {
-  var date = new Date();
+  var date = new Date().format("'yyyy.MM.dd");
   var title = req.body.title;
   var writer = req.body.writer;
   var contents = req.body.contents;
   var obj = {"title":title, "writer":writer, "task":contents, "date":date};
-  /* Mongo DB */
-  MongoClient.connect(dbUrl, function(err,db) {
-    writeData(db, obj, function(err, result){
-      assert.equal(null, err);
-      assert.equal(1, result.insertedCount);
-      db.close();
-      res.redirect('/');
-    })
+  var task = new todo(obj);
+  task.save(function(err){
+    if(err) console.log(err);
+    res.redirect('/');
   });
 });
 module.exports = router;

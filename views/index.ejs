@@ -5,38 +5,33 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-<h3>게시글 입력</h3>
-<form action="/task-register" method="post" autocomplete="on">
-	<div class="form-group">
-    <label>제목</label>
-    <input type="text" name="title" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>글쓴이</label>
-        <input type="text" name="writer" class="form-control">
-    </div>
-    <div class="form-group">
-        <label>내용</label>
-        <textarea name="contents" class="form-control" rows="5"></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">입력</button>
-</form>
-
-
 <h3>게시글 목록</h3>
-<form action="/task-done" method="post">
     <div>
-        <label>
-            <% if(todo!=(null&&"")){
-               todo.forEach(function(todo){ %>
-                 제목 : <%= todo.title %> / 글쓴이 : <%= todo.writer %> / 날짜 : <%=todo.date%><br>
-            <% });
-            } else { %>
-               <p>등록된 일정이 없습니다</p>
+		<table>
+			<tr>
+				<th>제목</th>
+				<th>글쓴이</th>
+				<th>날짜</th>
+			</tr>
+            <% if(todo!=(null&&"")){ %>
+			<tr>	
+               <%todo.forEach(function(todo){ %>
+                 <td> <a href="/detail?id=<%=todo._id%>"><%= todo.title %></a></td> 
+				 <td> <%= todo.writer %> </td>
+				 <td> <%=todo.date%>  </td>
+            <% }); %>
+			</tr>
+            <% } else { %>
+             <tr> <td colspan="3"> <p>등록된 게시글이 없습니다</p> </td> </tr>
             <%}%>
         </label>
+		</table>
     </div>
-    <button type="submit">done</button>
-</form>
+    <button type="submit" onclick="moveWrite()">글쓰기</button>
+	<script type="text/javascript">
+		function moveWrite(){
+			location.href="/write";
+			}
+	</script>
   </body>
 </html>
