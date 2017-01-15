@@ -14,13 +14,15 @@
 				<th>날짜</th>
 			</tr>
             <% if(todo!=(null&&"")){ %>
-			<tr>	
+				
                <%todo.forEach(function(todo){ %>
+			   <tr>
                  <td> <a href="/detail?id=<%=todo._id%>"><%= todo.title %></a></td> 
 				 <td> <%= todo.writer %> </td>
 				 <td> <%=todo.date%>  </td>
+			   </tr>
             <% }); %>
-			</tr>
+			
             <% } else { %>
              <tr> <td colspan="3"> <p>등록된 게시글이 없습니다</p> </td> </tr>
             <%}%>

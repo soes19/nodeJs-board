@@ -5,11 +5,20 @@ var config = require('../myModules/config');
 
 var todoSchema = mongoose.Schema({
   title:String,
-  date:Date,
+  date:String,
   writer:String,
   task:String,
 });
 var todo = mongoose.model("todo", todoSchema, 'test');
+
+Date.prototype.yyyymmdd = function()
+{
+    var yyyy = this.getFullYear().toString();
+    var mm = (this.getMonth() + 1).toString();
+    var dd = this.getDate().toString();
+
+    return yyyy +"."+ (mm[1] ? mm : '0'+mm[0]) +"."+ (dd[1] ? dd : '0'+dd[0]);
+}
 
 mongoose.connect(config.dbUrl());
 router.get('/list', function(req, res, next) {
@@ -37,7 +46,7 @@ router.get('/detail', function(req, res, next) {
 });
 
 router.post('/task-register', function(req, res) {
-  var date = new Date().format("'yyyy.MM.dd");
+  var date = (new Date()).yyyymmdd();
   var title = req.body.title;
   var writer = req.body.writer;
   var contents = req.body.contents;
